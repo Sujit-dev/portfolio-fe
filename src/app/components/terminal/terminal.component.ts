@@ -83,8 +83,15 @@ export class TerminalComponent implements OnInit, OnDestroy, AfterViewInit {
       setTimeout(() => {
         if (this.isMobile && this.mobileInput && !this.isTyping && !this.waitingForInput) {
           // On actual mobile devices, focus the mobile input
-          this.mobileInput.nativeElement.focus();
-          this.mobileInput.nativeElement.style.pointerEvents = 'auto';
+          // Use requestAnimationFrame for better mobile browser compatibility
+          requestAnimationFrame(() => {
+            if (this.mobileInput) {
+              this.mobileInput.nativeElement.focus();
+              this.mobileInput.nativeElement.style.pointerEvents = 'auto';
+              // Force focus on mobile - sometimes needs a click event
+              this.mobileInput.nativeElement.click();
+            }
+          });
         } else {
           // On desktop (including responsive view), blur mobile input and focus terminal container
           if (this.mobileInput) {
@@ -357,7 +364,12 @@ export class TerminalComponent implements OnInit, OnDestroy, AfterViewInit {
           if (this.isMobile && this.mobileInput) {
             setTimeout(() => {
               if (this.mobileInput && !this.isTyping) {
-                this.mobileInput.nativeElement.focus();
+                requestAnimationFrame(() => {
+                  if (this.mobileInput) {
+                    this.mobileInput.nativeElement.focus();
+                    this.mobileInput.nativeElement.click();
+                  }
+                });
               }
             }, 100);
           } else {
@@ -484,7 +496,12 @@ export class TerminalComponent implements OnInit, OnDestroy, AfterViewInit {
         if (this.isMobile && this.mobileInput) {
           setTimeout(() => {
             if (this.mobileInput) {
-              this.mobileInput.nativeElement.focus();
+              requestAnimationFrame(() => {
+                if (this.mobileInput) {
+                  this.mobileInput.nativeElement.focus();
+                  this.mobileInput.nativeElement.click();
+                }
+              });
             }
           }, 100);
         }
@@ -602,8 +619,13 @@ export class TerminalComponent implements OnInit, OnDestroy, AfterViewInit {
         if (this.isMobile && this.mobileInput && !this.waitingForInput) {
           setTimeout(() => {
             if (this.mobileInput && !this.waitingForInput) {
-              this.mobileInput.nativeElement.value = '';
-              this.mobileInput.nativeElement.focus();
+              requestAnimationFrame(() => {
+                if (this.mobileInput) {
+                  this.mobileInput.nativeElement.value = '';
+                  this.mobileInput.nativeElement.focus();
+                  this.mobileInput.nativeElement.click();
+                }
+              });
             }
           }, 100);
         }
@@ -615,8 +637,13 @@ export class TerminalComponent implements OnInit, OnDestroy, AfterViewInit {
         if (this.isMobile && this.mobileInput) {
           setTimeout(() => {
             if (this.mobileInput) {
-              this.mobileInput.nativeElement.value = '';
-              this.mobileInput.nativeElement.focus();
+              requestAnimationFrame(() => {
+                if (this.mobileInput) {
+                  this.mobileInput.nativeElement.value = '';
+                  this.mobileInput.nativeElement.focus();
+                  this.mobileInput.nativeElement.click();
+                }
+              });
             }
           }, 100);
         }
@@ -630,8 +657,13 @@ export class TerminalComponent implements OnInit, OnDestroy, AfterViewInit {
         if (this.isMobile && this.mobileInput && !this.waitingForInput) {
           setTimeout(() => {
             if (this.mobileInput && !this.waitingForInput) {
-              this.mobileInput.nativeElement.value = '';
-              this.mobileInput.nativeElement.focus();
+              requestAnimationFrame(() => {
+                if (this.mobileInput) {
+                  this.mobileInput.nativeElement.value = '';
+                  this.mobileInput.nativeElement.focus();
+                  this.mobileInput.nativeElement.click();
+                }
+              });
             }
           }, 100);
         }
@@ -758,9 +790,32 @@ export class TerminalComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.isMobile && !this.isTyping && !this.waitingForInput && this.mobileInput) {
       setTimeout(() => {
         if (this.mobileInput && !this.isTyping && !this.waitingForInput) {
-          this.mobileInput.nativeElement.focus();
+          // Use requestAnimationFrame for better mobile compatibility
+          requestAnimationFrame(() => {
+            if (this.mobileInput) {
+              this.mobileInput.nativeElement.focus();
+            }
+          });
         }
       }, 100);
+    }
+  }
+  
+  onMobileInputFocus() {
+    // Ensure input is ready when focused on mobile
+    if (this.isMobile && this.mobileInput) {
+      this.mobileInput.nativeElement.style.pointerEvents = 'auto';
+    }
+  }
+  
+  onMobileInputClick() {
+    // Ensure input gets focus when clicked on mobile
+    if (this.isMobile && this.mobileInput) {
+      requestAnimationFrame(() => {
+        if (this.mobileInput) {
+          this.mobileInput.nativeElement.focus();
+        }
+      });
     }
   }
 
@@ -772,8 +827,13 @@ export class TerminalComponent implements OnInit, OnDestroy, AfterViewInit {
       setTimeout(() => {
         if (this.isMobile && this.mobileInput && !this.isTyping && !this.waitingForInput) {
           // On actual mobile devices, focus the mobile input
-          this.mobileInput.nativeElement.focus();
-          this.mobileInput.nativeElement.style.pointerEvents = 'auto';
+          requestAnimationFrame(() => {
+            if (this.mobileInput) {
+              this.mobileInput.nativeElement.focus();
+              this.mobileInput.nativeElement.style.pointerEvents = 'auto';
+              this.mobileInput.nativeElement.click();
+            }
+          });
         } else {
           // On desktop (including responsive view), focus the terminal container
           if (this.mobileInput) {

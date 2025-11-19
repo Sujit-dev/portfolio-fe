@@ -1,4 +1,4 @@
-<div class="terminal-container" tabindex="0" (click)="focusTerminal()">
+<div class="terminal-container" tabindex="0" (click)="focusTerminal()" (touchstart)="focusTerminal()">
   <div class="terminal-window">
     <div class="terminal-header">
       <div class="terminal-buttons">
@@ -64,12 +64,15 @@
         (input)="onMobileInput($event)"
         (keydown)="onMobileKeyDown($event)"
         (blur)="onMobileInputBlur()"
+        (focus)="onMobileInputFocus()"
+        (click)="onMobileInputClick()"
         autocomplete="off"
         autocorrect="off"
         autocapitalize="off"
         spellcheck="false"
+        inputmode="text"
         aria-hidden="true"
-        tabindex="-1">
+        tabindex="0">
     </div>
   </div>
 </div>

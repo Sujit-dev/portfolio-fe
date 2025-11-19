@@ -249,13 +249,19 @@
   padding: 0;
   margin: 0;
   
-  // On mobile, make it focusable but invisible
+  // On mobile, make it focusable but invisible - position it in the terminal area
   @media (max-width: 768px) {
     position: fixed;
-    top: -9999px;
-    left: -9999px;
-    width: 1px;
-    height: 1px;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 50px;
+    opacity: 0.01;
+    pointer-events: auto;
+    z-index: 1000;
+    font-size: 16px; // Prevent zoom on iOS
+    -webkit-appearance: none;
+    -webkit-tap-highlight-color: transparent;
   }
 }
 
@@ -263,11 +269,20 @@
 @media (max-width: 768px) {
   .terminal-container {
     padding: 1rem;
+    // Make terminal container tappable on mobile to focus input
+    cursor: text;
+    -webkit-tap-highlight-color: transparent;
   }
 
   .terminal-body {
     padding: 1rem;
     font-size: 0.85rem;
+  }
+  
+  // Ensure mobile input is always accessible
+  .mobile-input {
+    // Make sure it's above other elements
+    z-index: 1001 !important;
   }
 }
 
