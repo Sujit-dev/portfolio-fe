@@ -16,6 +16,15 @@
             
             <div class="experience-card qa-experience-card">
               <div class="card-header qa-card-header">
+                <div class="qa-company-logo-wrapper">
+                  @if (experience.logoUrl) {
+                    <img [src]="experience.logoUrl" [alt]="experience.company + ' logo'" class="qa-company-logo" loading="lazy">
+                  } @else {
+                    <div class="qa-company-logo-placeholder">
+                      <span class="qa-logo-initial">{{ experience.company.charAt(0).toUpperCase() }}</span>
+                    </div>
+                  }
+                </div>
                 <div class="experience-company-info qa-company-info">
                   <h3 class="experience-company qa-company">{{ experience.company }}</h3>
                   <p class="experience-role qa-role">{{ experience.role }}</p>

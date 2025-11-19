@@ -7,6 +7,7 @@ export interface WorkExperience {
   responsibilities: string[];
   technologies: string[];
   icon?: string;
+  logoUrl?: string; // Company logo URL
 }
 
 export interface PortfolioItem {
