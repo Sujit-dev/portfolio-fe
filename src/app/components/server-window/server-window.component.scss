@@ -1,0 +1,234 @@
+.server-window-container {
+  width: 100%;
+  font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
+  text-align: left;
+
+  &.minimized {
+    .server-window {
+      .server-body {
+        display: none;
+      }
+    }
+  }
+  
+  @media (max-width: 768px) {
+    text-align: left;
+  }
+}
+
+.server-window {
+  width: 100%;
+  background: #0d1117;
+  border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  border: 1px solid #30363d;
+  height: 400px;
+  max-height: 400px;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  
+  @media (max-width: 768px) {
+    text-align: left;
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.server-header {
+  background: #161b22;
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border-bottom: 1px solid #30363d;
+  cursor: move;
+}
+
+.server-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+.btn-close {
+  background: #ff5f56;
+}
+
+.btn-minimize {
+  background: #ffbd2e;
+}
+
+.btn-maximize {
+  background: #27c93f;
+}
+
+.server-title {
+  color: #8b949e;
+  font-size: 0.875rem;
+  font-weight: 500;
+  flex: 1;
+  text-align: center;
+}
+
+.server-body {
+  background: #0d1117;
+  padding: 1.5rem;
+  flex: 1;
+  overflow-y: auto;
+  scrollbar-width: none; /* Hide scrollbar by default */
+  -ms-overflow-style: none; /* IE and Edge */
+  position: relative;
+  text-align: left;
+  
+  @media (max-width: 768px) {
+    padding: 1rem;
+    text-align: left;
+  }
+
+  /* Hide scrollbar by default */
+  &::-webkit-scrollbar {
+    width: 0px;
+    background: transparent;
+  }
+
+  /* Show scrollbar on hover */
+  &.hovering {
+    scrollbar-width: thin;
+    scrollbar-color: #58a6ff rgba(48, 54, 61, 0.5);
+
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: rgba(48, 54, 61, 0.3);
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: #58a6ff;
+      border-radius: 3px;
+
+      &:hover {
+        background: #79c0ff;
+      }
+    }
+  }
+}
+
+.server-content {
+  color: #c9d1d9;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  text-align: left;
+  width: 100%;
+}
+
+.server-line {
+  margin-bottom: 0.125rem;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  padding: 0.125rem 0;
+  font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
+  text-align: left;
+  width: 100%;
+
+  &.info-line {
+    color: #58a6ff;
+  }
+
+  &.success-line {
+    color: #00ff87;
+  }
+
+  &.warning-line {
+    color: #ffbd2e;
+  }
+
+  &.error-line {
+    color: #ff5f56;
+  }
+
+  &.code-line {
+    color: #c9d1d9;
+    
+    .line-content {
+      &::before {
+        content: '';
+      }
+    }
+    
+    // Syntax highlighting
+    &:has(.line-content:contains('const')) {
+      color: #79c0ff;
+    }
+    
+    // Highlight keywords
+    .line-content {
+      // JavaScript keywords
+      &:has-text('const') {
+        color: #79c0ff;
+      }
+    }
+  }
+
+  &.empty-line {
+    min-height: 0.5rem;
+    margin-bottom: 0.25rem;
+  }
+
+  &.current-line {
+    display: flex;
+    align-items: center;
+    margin-top: 0.5rem;
+    color: #58a6ff;
+  }
+}
+
+.line-content {
+  color: inherit;
+}
+
+.cursor {
+  display: inline-block;
+  background: #58a6ff;
+  color: #58a6ff;
+  margin-left: 2px;
+  animation: blink 1s infinite;
+
+  &.blink {
+    animation: blink 1s infinite;
+  }
+}
+
+@keyframes blink {
+  0%, 50% {
+    opacity: 1;
+  }
+  51%, 100% {
+    opacity: 0;
+  }
+}
+

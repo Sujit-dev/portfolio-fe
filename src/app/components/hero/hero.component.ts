@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PortfolioService } from '../../services/portfolio.service';
+import { ServerWindowComponent } from '../server-window/server-window.component';
 
 @Component({
   selector: 'app-hero',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ServerWindowComponent],
   templateUrl: './hero.component.html',
   styleUrl: './hero.component.scss'
 })

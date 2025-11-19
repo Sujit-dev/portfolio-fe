@@ -1,0 +1,41 @@
+@if (isVisible) {
+  <div class="server-window-container" [class.minimized]="isMinimized">
+    <div class="server-window">
+      <div class="server-header">
+        <div class="server-buttons">
+          <span class="btn btn-close" (click)="closeWindow()" title="Close"></span>
+          <span class="btn btn-minimize" (click)="toggleMinimize()" title="Minimize"></span>
+          <span class="btn btn-maximize" title="Maximize"></span>
+        </div>
+        <div class="server-title">server.js</div>
+      </div>
+      @if (!isMinimized) {
+        <div class="server-body" 
+             [class.hovering]="isHovering"
+             #serverBody 
+             (mouseenter)="onMouseEnter()" 
+             (mouseleave)="onMouseLeave()" 
+             (scroll)="onScroll()">
+          <div class="server-content">
+            @for (log of logs; track $index) {
+              <div class="server-line" 
+                   [class.info-line]="log.includes('✅') || log.includes('🚀') || log.includes('📊') || log.includes('📡') || log.includes('🔄') || log.includes('🌐') || log.includes('📦')"
+                   [class.success-line]="log.includes('✅') || log.includes('✨')"
+                   [class.warning-line]="log.includes('⚠️')"
+                   [class.error-line]="log.includes('❌')"
+                   [class.code-line]="log.includes('const') || log.includes('console') || log.includes('//') || log.includes('[') || log.includes(']') || log.includes(';') || log.includes('>')"
+                   [class.empty-line]="log.trim() === ''">
+                <span class="line-content">{{ log }}</span>
+              </div>
+            }
+            <div class="server-line current-line">
+              <span class="line-content">$</span>
+              <span class="cursor blink">█</span>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+}
+
