@@ -68,8 +68,9 @@
         (blur)="onMobileInputBlur()"
         (focus)="onMobileInputFocus()"
         (click)="onMobileInputClick()"
-        (touchstart)="onMobileInputClick()"
-        (touchend)="onMobileInputSelectionChange()"
+        (touchstart)="onMobileTouchStart($event)"
+        (touchend)="onMobileTouchEnd($event)"
+        (touchmove)="onMobileTouchMove($event)"
         (select)="onMobileInputSelectionChange()"
         autocomplete="off"
         autocorrect="off"
@@ -78,6 +79,20 @@
         inputmode="text"
         aria-hidden="true"
         tabindex="0">
+      
+      <!-- Custom paste menu for mobile -->
+      @if (showPasteMenu && isMobile) {
+        <div class="paste-menu-overlay" (click)="hidePasteMenu()">
+          <div class="paste-menu" (click)="$event.stopPropagation()">
+            <button class="paste-menu-btn" (click)="handlePasteFromMenu()" (touchstart)="handlePasteFromMenu()">
+              📋 Paste
+            </button>
+            <button class="paste-menu-btn" (click)="hidePasteMenu()" (touchstart)="hidePasteMenu()">
+              ✕ Cancel
+            </button>
+          </div>
+        </div>
+      }
     </div>
   </div>
 </div>
