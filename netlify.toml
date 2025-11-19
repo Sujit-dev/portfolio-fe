@@ -1,11 +1,15 @@
 [build]
-  command = "npm run build:netlify"
+  command = "npm run build:netlify && npm run postbuild:netlify"
   publish = "dist/portfolio-fe/browser"
+  
+[build.processing]
+  skip_processing = false
 
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
+  force = true
 
 [build.environment]
   NODE_VERSION = "18"

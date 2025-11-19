@@ -6,6 +6,7 @@
     "start": "ng serve",
     "build": "ng build",
     "build:netlify": "ng build --configuration production",
+    "postbuild:netlify": "node scripts/fix-netlify-build.js",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "serve:ssr:portfolio-fe": "node dist/portfolio-fe/server/server.mjs"
