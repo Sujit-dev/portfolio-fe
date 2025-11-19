@@ -28,9 +28,6 @@ export class TerminalComponent implements OnInit, OnDestroy, AfterViewInit {
   private tempCommand: string = ''; // Store current command when navigating history
   isMobile: boolean = false; // Made public for template access
   private selectionChangeListener?: () => void;
-  private longPressTimer?: any;
-  private longPressDelay: number = 500; // 500ms for long press
-  showPasteMenu: boolean = false;
 
   constructor(
     private router: Router,
@@ -155,9 +152,6 @@ export class TerminalComponent implements OnInit, OnDestroy, AfterViewInit {
     }
     if (this.typingTimeout) {
       clearTimeout(this.typingTimeout);
-    }
-    if (this.longPressTimer) {
-      clearTimeout(this.longPressTimer);
     }
     // Remove selection change listener
     if (this.selectionChangeListener && isPlatformBrowser(this.platformId)) {
@@ -966,86 +960,18 @@ export class TerminalComponent implements OnInit, OnDestroy, AfterViewInit {
   }
   
   onMobileTouchStart(event: TouchEvent) {
-    // Start long press timer for paste menu
+    // Focus input on touch
     if (this.isMobile && this.mobileInput) {
-      // Focus input
       this.mobileInput.nativeElement.focus();
-      
-      // Start long press timer
-      this.longPressTimer = setTimeout(() => {
-        // Long press detected - show paste menu
-        this.showPasteMenu = true;
-        this.triggerPasteMenu();
-      }, this.longPressDelay);
     }
   }
   
   onMobileTouchEnd(event: TouchEvent) {
-    // Cancel long press timer if touch ends before delay
-    if (this.longPressTimer) {
-      clearTimeout(this.longPressTimer);
-      this.longPressTimer = undefined;
-    }
+    // Touch ended - no special handling needed
   }
   
   onMobileTouchMove(event: TouchEvent) {
-    // Cancel long press if user moves finger
-    if (this.longPressTimer) {
-      clearTimeout(this.longPressTimer);
-      this.longPressTimer = undefined;
-    }
-  }
-  
-  triggerPasteMenu() {
-    // Try to show native paste menu by creating a context menu event
-    if (this.mobileInput && isPlatformBrowser(this.platformId)) {
-      const input = this.mobileInput.nativeElement;
-      // Select all text to make paste option available
-      input.select();
-      // On some mobile browsers, we can trigger context menu
-      // For iOS/Android, we'll show a custom menu
-      this.showCustomPasteMenu();
-    }
-  }
-  
-  showCustomPasteMenu() {
-    // Show custom paste menu overlay
-    this.showPasteMenu = true;
-    // Hide after a delay or when user interacts
-    setTimeout(() => {
-      this.showPasteMenu = false;
-    }, 3000);
-  }
-  
-  hidePasteMenu() {
-    this.showPasteMenu = false;
-  }
-  
-  handlePasteFromMenu() {
-    // Trigger paste action
-    if (this.mobileInput && navigator.clipboard) {
-      navigator.clipboard.readText().then(text => {
-        if (this.isTyping || this.waitingForInput) {
-          return;
-        }
-        // Insert pasted text at cursor position
-        const textToInsert = text.trim();
-        this.currentCommand = this.currentCommand.slice(0, this.cursorPosition) + textToInsert + this.currentCommand.slice(this.cursorPosition);
-        this.cursorPosition += textToInsert.length;
-        this.updateCurrentLine();
-        this.syncMobileInput();
-        this.showPasteMenu = false;
-      }).catch(err => {
-        console.error('Failed to read clipboard:', err);
-        this.showPasteMenu = false;
-      });
-    } else {
-      // Fallback: focus input and let user paste manually
-      if (this.mobileInput) {
-        this.mobileInput.nativeElement.focus();
-        this.showPasteMenu = false;
-      }
-    }
+    // Touch moved - no special handling needed
   }
   
   onMobileInputSelectionChange() {
