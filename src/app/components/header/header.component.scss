@@ -43,6 +43,10 @@
 }
 
 .nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
   .logo {
     display: flex;
     align-items: center;
@@ -80,6 +84,18 @@
 
   &:hover {
     color: #667eea;
+  }
+}
+
+// QA Theme Profile Image
+:host-context(.qa-theme) .nav-menu .profile-image-item .profile-image-small,
+.qa-header .nav-menu .profile-image-item .profile-image-small {
+  border-color: #667eea;
+  box-shadow: 0 0 10px rgba(102, 126, 234, 0.2);
+
+  &:hover {
+    border-color: #764ba2;
+    box-shadow: 0 0 15px rgba(102, 126, 234, 0.4);
   }
 }
 
@@ -148,6 +164,9 @@
   padding: 0;
 
   li {
+    display: flex;
+    align-items: center;
+
     a {
       text-decoration: none;
       color: #c9d1d9;
@@ -189,6 +208,40 @@
         }
       }
     }
+
+    &.profile-image-item {
+      margin-left: 1rem;
+      padding: 0;
+      border: none;
+
+      .profile-image-small {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #58a6ff;
+        box-shadow: 0 0 10px rgba(88, 166, 255, 0.3);
+        transition: all 0.3s ease;
+        display: block;
+        cursor: pointer;
+
+        &:hover {
+          transform: scale(1.1);
+          box-shadow: 0 0 15px rgba(88, 166, 255, 0.5);
+          border-color: #79c0ff;
+        }
+
+        @media (max-width: 768px) {
+          width: 36px;
+          height: 36px;
+        }
+
+        @media (max-width: 480px) {
+          width: 32px;
+          height: 32px;
+        }
+      }
+    }
   }
 
   // Mobile menu styles
@@ -226,6 +279,17 @@
 
       &:last-child {
         border-bottom: none;
+      }
+
+      &.profile-image-item {
+        margin-left: 0;
+        padding: 1rem 2rem;
+        justify-content: center;
+        border-bottom: none;
+
+        .profile-image-small {
+          margin: 0 auto;
+        }
       }
 
       a {

@@ -17,9 +17,118 @@
           </div>
         </div>
         <div class="hero-image qa-hero-image">
-          <img [src]="portfolioData?.profileImage || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop'" 
-               [alt]="portfolioData?.name" 
-               class="qa-profile-image">
+          <!-- Automation Demo Box -->
+          <div class="automation-demo-box">
+            <!-- Browser Window Preview -->
+            <div class="browser-window">
+              <div class="browser-header">
+                <div class="browser-controls">
+                  <span class="control-btn close"></span>
+                  <span class="control-btn minimize"></span>
+                  <span class="control-btn maximize"></span>
+                </div>
+                <div class="browser-url-bar">
+                  <span class="url-icon">🔒</span>
+                  <span class="url-text">{{ targetUrl }}</span>
+                </div>
+              </div>
+              <div class="browser-content">
+                @if (portfolioData?.profileImage && showProfileImage) {
+                  <div class="profile-image-container">
+                    <div class="profile-image-wrapper">
+                      <img 
+                        [src]="portfolioData.profileImage" 
+                        [alt]="portfolioData?.name" 
+                        class="profile-image-preview"
+                      />
+                      @if (isRunning && !firstTestCompleted) {
+                        <div class="profile-loading-ring"></div>
+                      }
+                    </div>
+                  </div>
+                }
+                @if (showBackgroundImage) {
+                  <div class="website-preview-image">
+                    <img 
+                      src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop" 
+                      alt="Website Preview"
+                      class="preview-img"
+                    />
+                  </div>
+                }
+                <iframe
+                  [src]="getSafeUrl()"
+                  class="website-preview"
+                  title="Website Preview"
+                  loading="lazy"
+                  sandbox="allow-same-origin allow-scripts allow-forms"
+                ></iframe>
+              </div>
+            </div>
+
+            <!-- Test Results Summary -->
+            <div class="results-summary">
+              <div class="summary-header">
+                <h3 class="summary-title">
+                  <span class="title-icon">📊</span>
+                  Test Results
+                </h3>
+                @if (isRunning) {
+                  <div class="running-indicator">
+                    <span class="spinner-small">⟳</span>
+                    <span>Running...</span>
+                  </div>
+                }
+              </div>
+
+              <div class="summary-stats">
+                <div class="stat-card total">
+                  <div class="stat-icon">📋</div>
+                  <div class="stat-content">
+                    <div class="stat-value">{{ testResults.total || testCases.length }}</div>
+                    <div class="stat-label">Total</div>
+                  </div>
+                </div>
+                <div class="stat-card passed">
+                  <div class="stat-icon">✓</div>
+                  <div class="stat-content">
+                    <div class="stat-value">{{ testResults.passed }}</div>
+                    <div class="stat-label">Passed</div>
+                  </div>
+                </div>
+                <div class="stat-card failed">
+                  <div class="stat-icon">✗</div>
+                  <div class="stat-content">
+                    <div class="stat-value">{{ testResults.failed }}</div>
+                    <div class="stat-label">Failed</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Test Cases List -->
+              <div class="test-cases-list">
+                @for (testCase of testCases; track testCase.id) {
+                  <div class="test-case-item" [class.running]="testCase.status === 'running'">
+                    <span class="test-status-icon" [ngClass]="'status-' + testCase.status">
+                      @if (testCase.status === 'pending') {
+                        ○
+                      } @else if (testCase.status === 'running') {
+                        ⟳
+                      } @else if (testCase.status === 'passed') {
+                        ✓
+                      } @else {
+                        ✗
+                      }
+                    </span>
+                    <span class="test-case-name">{{ testCase.name }}</span>
+                    @if (testCase.executionTime) {
+                      <span class="test-execution-time">{{ testCase.executionTime }}ms</span>
+                    }
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -39,6 +148,13 @@
                 <span class="btn-maximize"></span>
               </div>
               <div class="terminal-title">node&#64;portfolio:~$</div>
+              @if (portfolioData?.profileImage) {
+                <img 
+                  [src]="portfolioData.profileImage" 
+                  [alt]="portfolioData?.name" 
+                  class="terminal-profile-image"
+                />
+              }
             </div>
             <div class="terminal-body">
               <div class="terminal-line">

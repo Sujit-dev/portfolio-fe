@@ -343,7 +343,7 @@ export class PortfolioService {
   };
 
   private qaPortfolioData: PortfolioData = {
-    name: 'Mona',
+    name: 'Monalisha Biswal',
     title: 'Senior QA Engineer',
     bio: 'Experienced Quality Assurance Engineer with a passion for ensuring software quality, testing excellence, and delivering bug-free applications. Specializing in test automation, manual testing, and quality processes, I bring meticulous attention to detail and technical expertise to deliver high-quality software solutions.',
     profileImage: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop',

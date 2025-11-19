@@ -28,18 +28,6 @@
               <p class="qa-info-text">{{ portfolioData?.contact?.address }}</p>
             </div>
           }
-
-          <div class="social-links qa-social-links">
-            <h3 class="qa-social-title">Follow Me</h3>
-            <div class="social-icons qa-social-icons">
-              @for (link of portfolioData?.socialLinks; track link.name) {
-                <a [href]="link.url" target="_blank" rel="noopener" class="social-icon qa-social-icon" [attr.aria-label]="link.name">
-                  <span class="social-emoji qa-social-emoji">{{ link.icon }}</span>
-                  <span class="social-name qa-social-name">{{ link.name }}</span>
-                </a>
-              }
-            </div>
-          </div>
         </div>
 
         <div class="contact-form-wrapper qa-form-wrapper">
@@ -134,18 +122,6 @@
               <p>{{ portfolioData?.contact?.address }}</p>
             </div>
           }
-
-          <div class="social-links">
-            <h3>Follow Me</h3>
-            <div class="social-icons">
-              @for (link of portfolioData?.socialLinks; track link.name) {
-                <a [href]="link.url" target="_blank" rel="noopener" class="social-icon" [attr.aria-label]="link.name">
-                  <span class="social-emoji">{{ link.icon }}</span>
-                  <span class="social-name">{{ link.name }}</span>
-                </a>
-              }
-            </div>
-          </div>
         </div>
 
         <div class="contact-form-wrapper">

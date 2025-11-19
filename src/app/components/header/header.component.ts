@@ -17,6 +17,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   portfolioType: 'developer' | 'qa' = 'developer';
   portfolioName: string = '';
   portfolioTitle: string = '';
+  profileImage: string = '';
   private routerSubscription?: Subscription;
 
   constructor(
@@ -51,12 +52,14 @@ export class HeaderComponent implements OnInit, OnDestroy {
     if (storedData) {
       this.portfolioName = storedData.name;
       this.portfolioTitle = storedData.title;
+      this.profileImage = storedData.profileImage || '';
       this.portfolioType = activeProfileKey?.includes('-qa') ? 'qa' : 'developer';
     } else {
       // Fallback to default
       const defaultData = this.portfolioService.getPortfolioData();
       this.portfolioName = defaultData.name;
       this.portfolioTitle = defaultData.title;
+      this.profileImage = defaultData.profileImage || '';
       this.portfolioType = this.portfolioService.getCurrentPortfolioType();
     }
   }
