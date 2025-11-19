@@ -15,6 +15,7 @@ export class TerminalComponent implements OnInit, OnDestroy, AfterViewInit {
   commands: string[] = [];
   currentLine: string = '';
   currentCommand: string = '';
+  cursorPosition: number = 0; // Cursor position within currentCommand
   isTyping: boolean = false;
   showCursor: boolean = true;
   isLoading: boolean = false;
@@ -26,6 +27,7 @@ export class TerminalComponent implements OnInit, OnDestroy, AfterViewInit {
   private historyIndex: number = -1; // Current position in history (-1 means not browsing history)
   private tempCommand: string = ''; // Store current command when navigating history
   private isMobile: boolean = false;
+  private selectionChangeListener?: () => void;
 
   constructor(
     private router: Router,
@@ -114,6 +116,7 @@ export class TerminalComponent implements OnInit, OnDestroy, AfterViewInit {
     this.commands = [];
     this.currentLine = '';
     this.currentCommand = '';
+    this.cursorPosition = 0;
     this.isTyping = false;
     this.isLoading = false;
     this.portfolioLoaded = false;
@@ -124,6 +127,24 @@ export class TerminalComponent implements OnInit, OnDestroy, AfterViewInit {
     this.historyIndex = -1;
     this.tempCommand = '';
   }
+  
+  updateCurrentLine() {
+    // Update currentLine to show command with cursor position
+    this.currentLine = `$ ${this.currentCommand}`;
+  }
+  
+  syncMobileInput() {
+    // Sync mobile input value and cursor position
+    if (this.mobileInput) {
+      this.mobileInput.nativeElement.value = this.currentCommand;
+      // Set cursor position in mobile input
+      setTimeout(() => {
+        if (this.mobileInput) {
+          this.mobileInput.nativeElement.setSelectionRange(this.cursorPosition, this.cursorPosition);
+        }
+      }, 0);
+    }
+  }
 
   ngOnDestroy() {
     if (this.cursorInterval) {
@@ -131,6 +152,10 @@ export class TerminalComponent implements OnInit, OnDestroy, AfterViewInit {
     }
     if (this.typingTimeout) {
       clearTimeout(this.typingTimeout);
+    }
+    // Remove selection change listener
+    if (this.selectionChangeListener && isPlatformBrowser(this.platformId)) {
+      document.removeEventListener('selectionchange', this.selectionChangeListener);
     }
   }
 
@@ -142,6 +167,14 @@ export class TerminalComponent implements OnInit, OnDestroy, AfterViewInit {
     }
     
     const isCharacterKey = event.key.length === 1 && !event.ctrlKey && !event.metaKey && !event.altKey;
+    
+    // Handle Ctrl+C / Cmd+C to exit FIRST (works on both Windows/Linux and Mac)
+    // This should work regardless of terminal state (typing, waiting, etc.)
+    if ((event.ctrlKey || event.metaKey) && (event.key === 'c' || event.key === 'C')) {
+      event.preventDefault();
+      this.exitTerminal();
+      return;
+    }
     
     // On desktop (including responsive view), always handle keyboard events
     // Only skip if it's an actual mobile device AND the mobile input is focused
@@ -161,7 +194,7 @@ export class TerminalComponent implements OnInit, OnDestroy, AfterViewInit {
         }
         // On desktop or for special keys, handle them here
       } else {
-        // If it's a different input/textarea, skip it
+        // If it's a different input/textarea, skip it (but Ctrl+C was already handled above)
         return;
       }
     }
@@ -172,13 +205,6 @@ export class TerminalComponent implements OnInit, OnDestroy, AfterViewInit {
     }
     
     if (this.waitingForInput && event.key !== 'Enter') {
-      return;
-    }
-    
-    // Handle Ctrl+C / Cmd+C to exit (works on both Windows/Linux and Mac)
-    if ((event.ctrlKey || event.metaKey) && (event.key === 'c' || event.key === 'C')) {
-      event.preventDefault();
-      this.exitTerminal();
       return;
     }
     
@@ -218,19 +244,53 @@ export class TerminalComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
     
-    // Handle backspace separately
+    // Handle left arrow key to move cursor left
+    if (event.key === 'ArrowLeft') {
+      event.preventDefault();
+      if (this.cursorPosition > 0) {
+        this.cursorPosition--;
+        this.updateCurrentLine();
+        this.syncMobileInput();
+      }
+      return;
+    }
+    
+    // Handle right arrow key to move cursor right
+    if (event.key === 'ArrowRight') {
+      event.preventDefault();
+      if (this.cursorPosition < this.currentCommand.length) {
+        this.cursorPosition++;
+        this.updateCurrentLine();
+        this.syncMobileInput();
+      }
+      return;
+    }
+    
+    // Handle backspace - delete character before cursor
     if (event.key === 'Backspace') {
       event.preventDefault();
       // Reset history index when user starts typing
       this.historyIndex = -1;
       this.tempCommand = '';
-      if (this.currentCommand.length > 0) {
-        this.currentCommand = this.currentCommand.slice(0, -1);
-        this.currentLine = `$ ${this.currentCommand}`;
-        // Sync mobile input
-        if (this.mobileInput) {
-          this.mobileInput.nativeElement.value = this.currentCommand;
-        }
+      if (this.cursorPosition > 0) {
+        this.currentCommand = this.currentCommand.slice(0, this.cursorPosition - 1) + this.currentCommand.slice(this.cursorPosition);
+        this.cursorPosition--;
+        this.updateCurrentLine();
+        this.syncMobileInput();
+      }
+      return;
+    }
+    
+    // Handle Delete key - delete character at cursor
+    if (event.key === 'Delete') {
+      event.preventDefault();
+      // Reset history index when user starts typing
+      this.historyIndex = -1;
+      this.tempCommand = '';
+      if (this.cursorPosition < this.currentCommand.length) {
+        this.currentCommand = this.currentCommand.slice(0, this.cursorPosition) + this.currentCommand.slice(this.cursorPosition + 1);
+        this.updateCurrentLine();
+        this.syncMobileInput();
       }
       return;
     }
@@ -248,12 +308,11 @@ export class TerminalComponent implements OnInit, OnDestroy, AfterViewInit {
         this.historyIndex = -1;
         this.tempCommand = '';
       }
-      this.currentCommand += event.key;
-      this.currentLine = `$ ${this.currentCommand}`;
-      // Sync mobile input value to match what we set
-      if (this.mobileInput) {
-        this.mobileInput.nativeElement.value = this.currentCommand;
-      }
+      // Insert character at cursor position
+      this.currentCommand = this.currentCommand.slice(0, this.cursorPosition) + event.key + this.currentCommand.slice(this.cursorPosition);
+      this.cursorPosition++;
+      this.updateCurrentLine();
+      this.syncMobileInput();
     }
   }
   
@@ -268,11 +327,9 @@ export class TerminalComponent implements OnInit, OnDestroy, AfterViewInit {
       if (this.historyIndex < this.commandHistory.length - 1) {
         this.historyIndex++;
         this.currentCommand = this.commandHistory[this.commandHistory.length - 1 - this.historyIndex];
-        this.currentLine = `$ ${this.currentCommand}`;
-        // Sync mobile input
-        if (this.mobileInput) {
-          this.mobileInput.nativeElement.value = this.currentCommand;
-        }
+        this.cursorPosition = this.currentCommand.length; // Move cursor to end
+        this.updateCurrentLine();
+        this.syncMobileInput();
       }
     }
   }
@@ -282,21 +339,17 @@ export class TerminalComponent implements OnInit, OnDestroy, AfterViewInit {
       // Move down in history
       this.historyIndex--;
       this.currentCommand = this.commandHistory[this.commandHistory.length - 1 - this.historyIndex];
-      this.currentLine = `$ ${this.currentCommand}`;
-      // Sync mobile input
-      if (this.mobileInput) {
-        this.mobileInput.nativeElement.value = this.currentCommand;
-      }
+      this.cursorPosition = this.currentCommand.length; // Move cursor to end
+      this.updateCurrentLine();
+      this.syncMobileInput();
     } else if (this.historyIndex === 0) {
       // Reached the bottom, restore the temporary command
       this.historyIndex = -1;
       this.currentCommand = this.tempCommand;
-      this.currentLine = `$ ${this.currentCommand}`;
+      this.cursorPosition = this.currentCommand.length; // Move cursor to end
+      this.updateCurrentLine();
       this.tempCommand = '';
-      // Sync mobile input
-      if (this.mobileInput) {
-        this.mobileInput.nativeElement.value = this.currentCommand;
-      }
+      this.syncMobileInput();
     }
   }
   
@@ -395,13 +448,15 @@ export class TerminalComponent implements OnInit, OnDestroy, AfterViewInit {
   typeCommand(command: string) {
     this.isTyping = true;
     this.currentCommand = '';
+    this.cursorPosition = 0;
     this.currentLine = '';
     let charIndex = 0;
 
     const typeChar = () => {
       if (charIndex < command.length) {
         this.currentCommand += command[charIndex];
-        this.currentLine = `$ ${this.currentCommand}`;
+        this.cursorPosition = this.currentCommand.length;
+        this.updateCurrentLine();
         charIndex++;
         this.typingTimeout = setTimeout(typeChar, 50); // Reduced from 80ms to 50ms
       } else {
@@ -409,6 +464,7 @@ export class TerminalComponent implements OnInit, OnDestroy, AfterViewInit {
         this.commands.push(`$ ${command}`);
         this.currentLine = '';
         this.currentCommand = '';
+        this.cursorPosition = 0;
         // Auto-execute the command after a short delay instead of waiting for Enter
         setTimeout(() => {
           this.executeCommand(command);
@@ -441,10 +497,14 @@ export class TerminalComponent implements OnInit, OnDestroy, AfterViewInit {
     
     this.currentLine = '';
     this.currentCommand = '';
+    this.cursorPosition = 0;
     setTimeout(() => {
       // Check for portfolio navigation commands
-      // Support format: portfolio-name-type (e.g., portfolio-sujit-developer, portfolio-sujit-dev, portfolio-mona-qa)
-      const portfolioMatch = cmdToExecute.match(/^portfolio-(\w+)-(developer|dev|qa)$/i);
+      // Support format: name-type (e.g., sujit-dev, sujit-developer, mona-qa)
+      // Also support old format: portfolio-name-type for backward compatibility
+      const portfolioMatchNew = cmdToExecute.match(/^(\w+)-(developer|dev|qa)$/i);
+      const portfolioMatchOld = cmdToExecute.match(/^portfolio-(\w+)-(developer|dev|qa)$/i);
+      const portfolioMatch = portfolioMatchNew || portfolioMatchOld;
       
       if (portfolioMatch) {
         const name = portfolioMatch[1].toLowerCase();
@@ -459,7 +519,10 @@ export class TerminalComponent implements OnInit, OnDestroy, AfterViewInit {
         // Check if profile exists
         if (!this.portfolioService.hasProfile(profileKey)) {
           const availableProfiles = this.portfolioService.getAvailableProfiles();
-          const availableCommands = availableProfiles.map(p => `portfolio-${p.key}`).join(', ');
+          const availableCommands = availableProfiles.map(p => {
+            const shortKey = p.key.replace('-developer', '-dev');
+            return shortKey;
+          }).join(', ');
           this.commands.push(`Error: Portfolio not found for ${name}-${type}`);
           this.commands.push(`Available profiles: ${availableCommands}`);
           this.commands.push('');
@@ -509,59 +572,6 @@ export class TerminalComponent implements OnInit, OnDestroy, AfterViewInit {
         return;
       }
       
-      // Support old format for backward compatibility (including "dev")
-      const portfolioMatchOld = cmdToExecute.match(/^portfolio-(\w+)-(Developer|Dev|QA)$/i);
-      const portfolioMatchNew = cmdToExecute.match(/^portfolio-(Developer|Dev|QA)$/i);
-      
-      if (portfolioMatchOld || portfolioMatchNew) {
-        const match = portfolioMatchOld || portfolioMatchNew;
-        let type = match![match!.length - 1].toLowerCase();
-        // Normalize "dev" to "developer"
-        if (type === 'dev') {
-          type = 'developer';
-        } else if (type !== 'qa') {
-          type = 'developer';
-        }
-        const name = portfolioMatchOld ? portfolioMatchOld[1].toLowerCase() : (type === 'qa' ? 'mona' : 'sujit');
-        const profileKey = `${name}-${type}`;
-        
-        this.commands.push(`Loading ${type} portfolio for ${name}...`);
-        this.isLoading = true;
-        
-        setTimeout(() => {
-          const portfolioData = this.portfolioService.getPortfolioData(type as 'developer' | 'qa', profileKey);
-          
-          // Store profile data in localStorage
-          this.portfolioService.setActiveProfile(profileKey, portfolioData);
-          
-          this.commands.push(`✓ Portfolio data loaded successfully`);
-          this.commands.push(`  Name: ${portfolioData.name}`);
-          this.commands.push(`  Title: ${portfolioData.title}`);
-          this.commands.push(`  Projects: ${portfolioData.portfolio.length}`);
-          this.commands.push(`  Experience: ${portfolioData.workExperience.length} positions`);
-          this.commands.push(`  Social Links: ${portfolioData.socialLinks.length}`);
-          this.commands.push('');
-          this.commands.push('Portfolio ready! Press Enter or tap Continue to navigate...');
-          this.isLoading = false;
-          this.portfolioLoaded = true;
-          this.waitingForInput = true;
-          this.currentLine = '$ ';
-          
-          // Store the profile key for navigation
-          (this as any).pendingProfileKey = profileKey;
-          
-          // Focus mobile input when waiting for input
-          if (this.isMobile && this.mobileInput) {
-            setTimeout(() => {
-              if (this.mobileInput) {
-                this.mobileInput.nativeElement.focus();
-              }
-            }, 100);
-          }
-        }, 800);
-        return;
-      }
-      
       if (cmdToExecute === 'fetch-portfolio') {
         this.commands.push('Fetching portfolio data from server...');
         this.isLoading = true;
@@ -603,12 +613,9 @@ export class TerminalComponent implements OnInit, OnDestroy, AfterViewInit {
         this.commands.push('Available commands:');
         this.commands.push('  fetch-portfolio              - Load default portfolio data');
         availableProfiles.forEach(profile => {
-          this.commands.push(`  portfolio-${profile.key}   - Load ${profile.name} ${profile.type} portfolio`);
-          // Show dev shortcut for developer profiles
-          if (profile.type === 'developer') {
-            const devKey = profile.key.replace('-developer', '-dev');
-            this.commands.push(`  portfolio-${devKey}        - Load ${profile.name} ${profile.type} portfolio (shortcut)`);
-          }
+          // Show simplified format (name-type)
+          const shortKey = profile.key.replace('-developer', '-dev');
+          this.commands.push(`  ${shortKey}                 - Load ${profile.name} ${profile.type} portfolio`);
         });
         this.commands.push('  help                        - Show this help message');
         this.commands.push('  clear                       - Clear terminal');
@@ -633,6 +640,7 @@ export class TerminalComponent implements OnInit, OnDestroy, AfterViewInit {
         this.commands = [];
         this.currentLine = '$ ';
         this.currentCommand = '';
+        this.cursorPosition = 0;
         // Focus mobile input after clear
         if (this.isMobile && this.mobileInput) {
           setTimeout(() => {
@@ -700,6 +708,7 @@ export class TerminalComponent implements OnInit, OnDestroy, AfterViewInit {
       // Manual command entry
       this.executeCommand(this.currentCommand.trim());
       this.currentCommand = '';
+      this.cursorPosition = 0;
       this.currentLine = '';
     }
   }
@@ -715,13 +724,85 @@ export class TerminalComponent implements OnInit, OnDestroy, AfterViewInit {
     
     // Check if the value matches what we already have (means it was synced by window handler)
     // This prevents duplicate processing when physical keyboard is used
-    if (input.value === this.currentCommand) {
+    const selectionStart = input.selectionStart || 0;
+    if (input.value === this.currentCommand && selectionStart === this.cursorPosition) {
       return;
     }
     
     this.currentCommand = input.value;
-    this.currentLine = `$ ${this.currentCommand}`;
+    this.cursorPosition = selectionStart;
+    this.updateCurrentLine();
     // Reset history index when user starts typing
+    if (this.historyIndex !== -1) {
+      this.historyIndex = -1;
+      this.tempCommand = '';
+    }
+  }
+  
+  onMobilePaste(event: ClipboardEvent) {
+    // Enable paste functionality for both mobile and desktop
+    event.preventDefault();
+    const pastedText = event.clipboardData?.getData('text') || '';
+    
+    // Only process if we're not in typing animation or waiting state
+    if (this.isTyping || this.waitingForInput) {
+      return;
+    }
+    
+    // Insert pasted text at cursor position
+    const textToInsert = pastedText.trim();
+    this.currentCommand = this.currentCommand.slice(0, this.cursorPosition) + textToInsert + this.currentCommand.slice(this.cursorPosition);
+    this.cursorPosition += textToInsert.length;
+    this.updateCurrentLine();
+    
+    // Sync with mobile input
+    if (this.mobileInput) {
+      this.mobileInput.nativeElement.value = this.currentCommand;
+      setTimeout(() => {
+        if (this.mobileInput) {
+          this.mobileInput.nativeElement.setSelectionRange(this.cursorPosition, this.cursorPosition);
+        }
+      }, 0);
+    }
+    
+    // Reset history index when pasting
+    if (this.historyIndex !== -1) {
+      this.historyIndex = -1;
+      this.tempCommand = '';
+    }
+  }
+  
+  onDesktopPaste(event: ClipboardEvent) {
+    // Handle paste on desktop (when terminal container is focused)
+    if (this.isMobile) {
+      return; // Let mobile input handle it
+    }
+    
+    event.preventDefault();
+    const pastedText = event.clipboardData?.getData('text') || '';
+    
+    // Only process if we're not in typing animation or waiting state
+    if (this.isTyping || this.waitingForInput) {
+      return;
+    }
+    
+    // Insert pasted text at cursor position
+    const textToInsert = pastedText.trim();
+    this.currentCommand = this.currentCommand.slice(0, this.cursorPosition) + textToInsert + this.currentCommand.slice(this.cursorPosition);
+    this.cursorPosition += textToInsert.length;
+    this.updateCurrentLine();
+    
+    // Sync with mobile input (for consistency)
+    if (this.mobileInput) {
+      this.mobileInput.nativeElement.value = this.currentCommand;
+      setTimeout(() => {
+        if (this.mobileInput) {
+          this.mobileInput.nativeElement.setSelectionRange(this.cursorPosition, this.cursorPosition);
+        }
+      }, 0);
+    }
+    
+    // Reset history index when pasting
     if (this.historyIndex !== -1) {
       this.historyIndex = -1;
       this.tempCommand = '';
@@ -735,12 +816,20 @@ export class TerminalComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
     
+    // Handle Ctrl+C / Cmd+C to exit FIRST (works regardless of state)
+    if ((event.ctrlKey || event.metaKey) && (event.key === 'c' || event.key === 'C')) {
+      event.preventDefault();
+      this.exitTerminal();
+      return;
+    }
+    
     // Handle Enter key
     if (event.key === 'Enter' || event.keyCode === 13) {
       event.preventDefault();
       if (this.currentCommand.trim()) {
         this.executeCommand(this.currentCommand.trim());
         this.currentCommand = '';
+        this.cursorPosition = 0;
         this.currentLine = '';
         if (this.mobileInput) {
           this.mobileInput.nativeElement.value = '';
@@ -749,12 +838,53 @@ export class TerminalComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
     
-    // Handle backspace
+    // Handle left arrow key to move cursor left
+    if (event.key === 'ArrowLeft') {
+      event.preventDefault();
+      if (this.cursorPosition > 0) {
+        this.cursorPosition--;
+        this.updateCurrentLine();
+        this.syncMobileInput();
+      }
+      return;
+    }
+    
+    // Handle right arrow key to move cursor right
+    if (event.key === 'ArrowRight') {
+      event.preventDefault();
+      if (this.cursorPosition < this.currentCommand.length) {
+        this.cursorPosition++;
+        this.updateCurrentLine();
+        this.syncMobileInput();
+      }
+      return;
+    }
+    
+    // Handle backspace - delete character before cursor
     if (event.key === 'Backspace') {
       // Reset history index when user starts typing
       this.historyIndex = -1;
       this.tempCommand = '';
-      // The input event will handle the value change
+      if (this.cursorPosition > 0) {
+        this.currentCommand = this.currentCommand.slice(0, this.cursorPosition - 1) + this.currentCommand.slice(this.cursorPosition);
+        this.cursorPosition--;
+        this.updateCurrentLine();
+        this.syncMobileInput();
+      }
+      return;
+    }
+    
+    // Handle Delete key - delete character at cursor
+    if (event.key === 'Delete') {
+      event.preventDefault();
+      // Reset history index when user starts typing
+      this.historyIndex = -1;
+      this.tempCommand = '';
+      if (this.cursorPosition < this.currentCommand.length) {
+        this.currentCommand = this.currentCommand.slice(0, this.cursorPosition) + this.currentCommand.slice(this.cursorPosition + 1);
+        this.updateCurrentLine();
+        this.syncMobileInput();
+      }
       return;
     }
     
@@ -762,30 +892,23 @@ export class TerminalComponent implements OnInit, OnDestroy, AfterViewInit {
     if (event.key === 'ArrowUp') {
       event.preventDefault();
       this.navigateHistoryUp();
-      if (this.mobileInput) {
-        this.mobileInput.nativeElement.value = this.currentCommand;
-      }
       return;
     }
     
     if (event.key === 'ArrowDown') {
       event.preventDefault();
       this.navigateHistoryDown();
-      if (this.mobileInput) {
-        this.mobileInput.nativeElement.value = this.currentCommand;
-      }
-      return;
-    }
-    
-    // Handle Ctrl+C / Cmd+C to exit
-    if ((event.ctrlKey || event.metaKey) && (event.key === 'c' || event.key === 'C')) {
-      event.preventDefault();
-      this.exitTerminal();
       return;
     }
   }
   
   onMobileInputBlur() {
+    // Remove selection change listener when input loses focus
+    if (this.selectionChangeListener && isPlatformBrowser(this.platformId)) {
+      document.removeEventListener('selectionchange', this.selectionChangeListener);
+      this.selectionChangeListener = undefined;
+    }
+    
     // Refocus on mobile when user taps away (to keep keyboard open)
     if (this.isMobile && !this.isTyping && !this.waitingForInput && this.mobileInput) {
       setTimeout(() => {
@@ -805,6 +928,15 @@ export class TerminalComponent implements OnInit, OnDestroy, AfterViewInit {
     // Ensure input is ready when focused on mobile
     if (this.isMobile && this.mobileInput) {
       this.mobileInput.nativeElement.style.pointerEvents = 'auto';
+      // Add selection change listener for mobile cursor tracking
+      if (isPlatformBrowser(this.platformId)) {
+        this.selectionChangeListener = () => {
+          if (this.mobileInput && document.activeElement === this.mobileInput.nativeElement) {
+            this.updateCursorFromMobileInput();
+          }
+        };
+        document.addEventListener('selectionchange', this.selectionChangeListener);
+      }
     }
   }
   
@@ -814,8 +946,38 @@ export class TerminalComponent implements OnInit, OnDestroy, AfterViewInit {
       requestAnimationFrame(() => {
         if (this.mobileInput) {
           this.mobileInput.nativeElement.focus();
+          // Update cursor position based on tap location
+          // Use multiple attempts to catch cursor position after tap
+          setTimeout(() => {
+            this.updateCursorFromMobileInput();
+          }, 0);
+          setTimeout(() => {
+            this.updateCursorFromMobileInput();
+          }, 50);
         }
       });
+    }
+  }
+  
+  onMobileInputSelectionChange() {
+    // Handle cursor position changes when user taps to move cursor
+    if (this.isMobile && this.mobileInput) {
+      // Use setTimeout to ensure selection is updated after the event
+      setTimeout(() => {
+        this.updateCursorFromMobileInput();
+      }, 0);
+    }
+  }
+  
+  updateCursorFromMobileInput() {
+    // Update cursor position from mobile input selection
+    if (this.mobileInput) {
+      const input = this.mobileInput.nativeElement;
+      const selectionStart = input.selectionStart || 0;
+      if (selectionStart !== this.cursorPosition) {
+        this.cursorPosition = selectionStart;
+        this.updateCurrentLine();
+      }
     }
   }
 

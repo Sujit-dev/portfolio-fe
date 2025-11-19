@@ -1,4 +1,4 @@
-<div class="terminal-container" tabindex="0" (click)="focusTerminal()" (touchstart)="focusTerminal()">
+<div class="terminal-container" tabindex="0" (click)="focusTerminal()" (touchstart)="focusTerminal()" (paste)="onDesktopPaste($event)">
   <div class="terminal-window">
     <div class="terminal-header">
       <div class="terminal-buttons">
@@ -18,8 +18,9 @@
           </div>
         }
         <div class="terminal-line current-line">
-          <span class="line-content">{{ currentLine || '$ ' }}</span>
+          <span class="line-content">$ {{ currentCommand.slice(0, cursorPosition) }}</span>
           <span class="cursor" [class.blink]="showCursor">█</span>
+          <span class="line-content">{{ currentCommand.slice(cursorPosition) }}</span>
         </div>
         @if (isLoading) {
           <div class="loading-indicator">
@@ -63,9 +64,13 @@
         class="mobile-input"
         (input)="onMobileInput($event)"
         (keydown)="onMobileKeyDown($event)"
+        (paste)="onMobilePaste($event)"
         (blur)="onMobileInputBlur()"
         (focus)="onMobileInputFocus()"
         (click)="onMobileInputClick()"
+        (touchstart)="onMobileInputClick()"
+        (touchend)="onMobileInputSelectionChange()"
+        (select)="onMobileInputSelectionChange()"
         autocomplete="off"
         autocorrect="off"
         autocapitalize="off"
