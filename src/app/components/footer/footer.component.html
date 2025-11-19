@@ -1,0 +1,53 @@
+<footer class="footer">
+  <div class="footer-container">
+    <div class="footer-content">
+      <div class="footer-section">
+        <h3 class="footer-title">{{ portfolioData?.name }}</h3>
+        <p class="footer-description">{{ portfolioData?.title }}</p>
+      </div>
+
+      <div class="footer-section">
+        <h4 class="footer-heading">Quick Links</h4>
+        <ul class="footer-links">
+          <li><a href="#home" (click)="scrollToSection('home', $event)">Home</a></li>
+          <li><a href="#about" (click)="scrollToSection('about', $event)">About</a></li>
+          <li><a href="#experience" (click)="scrollToSection('experience', $event)">Experience</a></li>
+          <li><a href="#portfolio" (click)="scrollToSection('portfolio', $event)">Portfolio</a></li>
+          <li><a href="#contact" (click)="scrollToSection('contact', $event)">Contact</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-section">
+        <h4 class="footer-heading">Contact</h4>
+        <ul class="footer-contact">
+          <li>
+            <a [href]="'mailto:' + portfolioData?.contact?.email">
+              {{ portfolioData?.contact?.email }}
+            </a>
+          </li>
+          <li>
+            <a [href]="'tel:' + portfolioData?.contact?.phone">
+              {{ portfolioData?.contact?.phone }}
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="footer-section">
+        <h4 class="footer-heading">Follow Me</h4>
+        <div class="footer-social">
+          @for (link of portfolioData?.socialLinks; track link.name) {
+            <a [href]="link.url" target="_blank" rel="noopener" class="social-link" [attr.aria-label]="link.name">
+              <span class="social-emoji">{{ link.icon }}</span>
+            </a>
+          }
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; {{ currentYear }} Sujit Kumar Patra. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+

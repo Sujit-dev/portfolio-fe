@@ -1,0 +1,75 @@
+<div class="terminal-container" tabindex="0" (click)="focusTerminal()">
+  <div class="terminal-window">
+    <div class="terminal-header">
+      <div class="terminal-buttons">
+        <span class="btn btn-close"></span>
+        <span class="btn btn-minimize"></span>
+        <span class="btn btn-maximize"></span>
+      </div>
+      <div class="terminal-title">portfolio-terminal</div>
+    </div>
+    <div class="terminal-body">
+      <div class="terminal-content">
+        @for (line of commands; track $index) {
+          <div class="terminal-line" 
+               [class.command-line]="line.startsWith('$')"
+               [class.success-line]="line.startsWith('✓')">
+            <span class="line-content">{{ line }}</span>
+          </div>
+        }
+        <div class="terminal-line current-line">
+          <span class="line-content">{{ currentLine || '$ ' }}</span>
+          <span class="cursor" [class.blink]="showCursor">█</span>
+        </div>
+        @if (isLoading) {
+          <div class="loading-indicator">
+            <span class="spinner"></span>
+            <span>Loading...</span>
+          </div>
+        }
+      </div>
+      @if (waitingForInput) {
+        <div class="mobile-buttons">
+          @if (portfolioLoaded) {
+            <button 
+              class="mobile-submit-btn mobile-continue-btn" 
+              (click)="handleContinue()"
+              (touchstart)="handleContinue()"
+              aria-label="Continue to portfolio">
+              Continue →
+            </button>
+            <button 
+              class="mobile-submit-btn mobile-exit-btn" 
+              (click)="exitTerminal()"
+              (touchstart)="exitTerminal()"
+              aria-label="Exit Terminal">
+              Exit Terminal v2.0
+            </button>
+          } @else {
+            <button 
+              class="mobile-submit-btn" 
+              (click)="handleMobileSubmit()"
+              (touchstart)="handleMobileSubmit()"
+              aria-label="Continue">
+              Continue →
+            </button>
+          }
+        </div>
+      }
+      <!-- Hidden input for mobile keyboard -->
+      <input 
+        #mobileInput
+        type="text"
+        class="mobile-input"
+        (input)="onMobileInput($event)"
+        (keydown)="onMobileKeyDown($event)"
+        (blur)="onMobileInputBlur()"
+        autocomplete="off"
+        autocorrect="off"
+        autocapitalize="off"
+        spellcheck="false"
+        aria-hidden="true"
+        tabindex="-1">
+    </div>
+  </div>
+</div>

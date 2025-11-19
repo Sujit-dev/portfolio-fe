@@ -1,0 +1,70 @@
+@if (isQA) {
+  <!-- QA Education - Horizontal Timeline -->
+  <section id="education" class="education qa-education">
+    <div class="education-container qa-education-container">
+      <div class="section-header qa-section-header">
+        <h2 class="section-title qa-section-title">Education</h2>
+        <p class="section-subtitle qa-section-subtitle">My academic journey and qualifications</p>
+      </div>
+      
+      <div class="education-timeline-horizontal qa-education-timeline-horizontal">
+        @for (edu of education; track edu.id; let i = $index) {
+          <div class="timeline-item-horizontal qa-timeline-item-horizontal" [style.animation-delay]="(i * 0.1) + 's'">
+            <div class="timeline-marker-horizontal qa-timeline-marker-horizontal">
+              <div class="marker-dot-horizontal qa-marker-dot-horizontal"></div>
+            </div>
+            
+            <div class="education-card qa-education-card">
+              <div class="education-icon qa-education-icon">{{ edu.icon || '🎓' }}</div>
+              <h3 class="education-degree qa-education-degree">{{ edu.degree }}</h3>
+              <p class="education-institution qa-education-institution">{{ edu.institution }}</p>
+              <div class="education-details qa-education-details">
+                <span class="education-year qa-education-year">{{ edu.year }}</span>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+} @else {
+  <!-- Developer Education - Horizontal Timeline Terminal Style -->
+  <section id="education" class="education">
+    <div class="education-container">
+      <div class="section-header">
+        <h2 class="section-title">Education</h2>
+        <p class="section-subtitle">My academic journey and qualifications</p>
+      </div>
+      
+      <div class="education-timeline-horizontal">
+        @for (edu of education; track edu.id; let i = $index) {
+          <div class="timeline-item-horizontal" [style.animation-delay]="(i * 0.1) + 's'">
+            <div class="timeline-marker-horizontal">
+              <div class="marker-dot-horizontal"></div>
+            </div>
+            
+            <div class="education-card">
+              <div class="education-badge">
+                <div class="badge-icon">{{ edu.icon || '🎓' }}</div>
+              </div>
+              <div class="education-content">
+                <h3 class="education-degree">{{ edu.degree }}</h3>
+                <p class="education-institution">
+                  <span class="institution-icon">🏫</span>
+                  {{ edu.institution }}
+                </p>
+                <div class="education-details">
+                  <div class="year-badge">
+                    <span class="year-icon">📅</span>
+                    <span class="education-year">{{ edu.year }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+}
+

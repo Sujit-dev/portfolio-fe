@@ -1,0 +1,144 @@
+@if (isQA) {
+  <!-- QA Experience - Plain Timeline -->
+  <section id="experience" class="experience qa-experience">
+    <div class="experience-container qa-experience-container">
+      <div class="section-header qa-section-header">
+        <h2 class="section-title qa-section-title">Work Experience</h2>
+        <p class="section-subtitle qa-section-subtitle">My professional journey across different companies and roles</p>
+      </div>
+      
+      <div class="experience-timeline qa-experience-timeline">
+        @for (experience of workExperience; track experience.id; let i = $index) {
+          <div class="timeline-item qa-timeline-item" [class.current]="!experience.endDate">
+            <div class="timeline-marker qa-timeline-marker">
+              <div class="marker-dot qa-marker-dot"></div>
+            </div>
+            
+            <div class="experience-card qa-experience-card">
+              <div class="card-header qa-card-header">
+                <div class="experience-company-info qa-company-info">
+                  <h3 class="experience-company qa-company">{{ experience.company }}</h3>
+                  <p class="experience-role qa-role">{{ experience.role }}</p>
+                </div>
+                <div class="experience-dates qa-dates">
+                  <span class="date-range qa-date-range">
+                    {{ formatDate(experience.startDate) }} - {{ experience.endDate ? formatDate(experience.endDate) : 'Present' }}
+                  </span>
+                  <span class="duration qa-duration">{{ getDuration(experience.startDate, experience.endDate) }}</span>
+                </div>
+              </div>
+              
+              <div class="card-content qa-card-content">
+                <div class="experience-responsibilities qa-responsibilities">
+                  <h4 class="qa-content-title">Key Responsibilities</h4>
+                  <ul class="responsibilities-list qa-responsibilities-list">
+                    @for (responsibility of experience.responsibilities; track $index) {
+                      <li class="qa-responsibility-item">{{ responsibility }}</li>
+                    }
+                  </ul>
+                </div>
+                
+                <div class="experience-technologies qa-technologies">
+                  <h4 class="qa-content-title">Technologies & Tools</h4>
+                  <div class="tech-tags qa-tech-tags">
+                    @for (tech of experience.technologies; track tech) {
+                      <span class="tech-tag qa-tech-tag">{{ tech }}</span>
+                    }
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+} @else {
+  <!-- Developer Experience - Terminal Style -->
+  <section id="experience" class="experience">
+    <div class="experience-container">
+      <div class="section-header">
+        <h2 class="section-title">Work Experience</h2>
+        <p class="section-subtitle">My professional journey across different companies and roles</p>
+      </div>
+      
+      <div class="experience-timeline">
+        @for (experience of workExperience; track experience.id; let i = $index) {
+          <div class="timeline-item" [class.current]="!experience.endDate">
+            <div class="timeline-marker">
+              <div class="marker-dot"></div>
+              @if (!experience.endDate) {
+                <div class="marker-pulse"></div>
+              }
+            </div>
+            
+            <div class="experience-card">
+              <div class="card-header">
+                <div class="company-badge">
+                  <div class="badge-icon">🏢</div>
+                </div>
+                <div class="experience-company-info">
+                  <h3 class="experience-company">{{ experience.company }}</h3>
+                  <p class="experience-role">
+                    <span class="role-icon">💼</span>
+                    {{ experience.role }}
+                  </p>
+                </div>
+                <div class="experience-dates">
+                  <div class="date-badge">
+                    <span class="date-icon">📅</span>
+                    <span class="date-range">
+                      {{ formatDate(experience.startDate) }} - {{ experience.endDate ? formatDate(experience.endDate) : 'Present' }}
+                    </span>
+                  </div>
+                  <div class="duration-badge">
+                    <span class="duration-icon">⏱️</span>
+                    <span class="duration">{{ getDuration(experience.startDate, experience.endDate) }}</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="card-content">
+                <div class="experience-responsibilities">
+                  <div class="section-title-small">
+                    <span class="title-icon">✨</span>
+                    <h4>Key Responsibilities</h4>
+                  </div>
+                  <ul class="responsibilities-list">
+                    @for (responsibility of experience.responsibilities; track $index) {
+                      <li>
+                        <span class="bullet-icon">▸</span>
+                        <span>{{ responsibility }}</span>
+                      </li>
+                    }
+                  </ul>
+                </div>
+                
+                <div class="experience-technologies">
+                  <div class="section-title-small">
+                    <span class="title-icon">🛠️</span>
+                    <h4>Technologies & Tools</h4>
+                  </div>
+                  <div class="tech-tags">
+                    @for (tech of experience.technologies; track tech) {
+                      <span class="tech-tag">{{ tech }}</span>
+                    }
+                  </div>
+                </div>
+              </div>
+              
+              <div class="card-footer">
+                <div class="experience-indicator">
+                  @if (!experience.endDate) {
+                    <span class="current-badge">Current Position</span>
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+}
+

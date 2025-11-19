@@ -1,0 +1,143 @@
+@if (isQA) {
+  <!-- QA Hero - Simple About Section -->
+  <section id="home" class="hero qa-hero">
+    <div class="hero-container">
+      <div class="hero-content qa-hero-content">
+        <div class="hero-text qa-hero-text">
+          <h1 class="hero-title qa-hero-title">{{ portfolioData?.name }}</h1>
+          <p class="hero-subtitle qa-hero-subtitle">{{ portfolioData?.title }}</p>
+          <p class="hero-description qa-hero-description">{{ portfolioData?.bio }}</p>
+          <div class="hero-buttons qa-hero-buttons">
+            <button class="btn btn-primary qa-btn" (click)="scrollToSection('portfolio')">
+              View Portfolio
+            </button>
+            <button class="btn btn-secondary qa-btn" (click)="scrollToSection('contact')">
+              Get In Touch
+            </button>
+          </div>
+        </div>
+        <div class="hero-image qa-hero-image">
+          <img [src]="portfolioData?.profileImage || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop'" 
+               [alt]="portfolioData?.name" 
+               class="qa-profile-image">
+        </div>
+      </div>
+    </div>
+  </section>
+} @else {
+  <!-- Developer Hero - Terminal Style -->
+  <section id="home" class="hero">
+    <div class="terminal-lines"></div>
+    <div class="hero-container">
+      <div class="hero-content">
+        <div class="hero-text">
+          <div class="terminal-window">
+            <div class="terminal-header">
+              <div class="terminal-buttons">
+                <span class="btn-close"></span>
+                <span class="btn-minimize"></span>
+                <span class="btn-maximize"></span>
+              </div>
+              <div class="terminal-title">node&#64;portfolio:~$</div>
+            </div>
+            <div class="terminal-body">
+              <div class="terminal-line">
+                <span class="prompt">$</span>
+                <span class="command">whoami</span>
+              </div>
+              <div class="terminal-output">
+                <h1 class="hero-title">{{ portfolioData?.name }}</h1>
+              </div>
+              <div class="terminal-line">
+                <span class="prompt">$</span>
+                <span class="command">cat role.txt</span>
+              </div>
+              <div class="terminal-output">
+                <p class="hero-subtitle">{{ portfolioData?.title }}</p>
+              </div>
+              <div class="terminal-line">
+                <span class="prompt">$</span>
+                <span class="command">cat bio.md</span>
+              </div>
+              <div class="terminal-output">
+                <p class="hero-description">{{ portfolioData?.bio }}</p>
+              </div>
+              <div class="terminal-line">
+                <span class="prompt">$</span>
+                <span class="command typing">npm run portfolio</span>
+                <span class="cursor">_</span>
+              </div>
+            </div>
+          </div>
+          <div class="hero-buttons">
+            <button class="btn btn-primary" (click)="scrollToSection('portfolio')">
+              <span class="btn-icon">></span> View Portfolio
+            </button>
+            <button class="btn btn-secondary" (click)="scrollToSection('contact')">
+              <span class="btn-icon">></span> Get In Touch
+            </button>
+          </div>
+        </div>
+        <div class="hero-image">
+          <div class="terminal-window code-window">
+            <div class="terminal-header">
+              <div class="terminal-buttons">
+                <span class="btn-close"></span>
+                <span class="btn-minimize"></span>
+                <span class="btn-maximize"></span>
+              </div>
+              <div class="terminal-title">server.js</div>
+            </div>
+            <div class="code-content">
+              <div class="code-line">
+                <span class="line-number">1</span>
+                <span class="code-keyword">const</span>
+                <span class="code-variable">developer</span>
+                <span class="code-operator">=</span>
+                <span class="code-string">'{{ portfolioData?.name }}'</span><span class="code-operator">;</span>
+              </div>
+              <div class="code-line">
+                <span class="line-number">2</span>
+              </div>
+              <div class="code-line">
+                <span class="line-number">3</span>
+                <span class="code-keyword">const</span>
+                <span class="code-variable">skills</span>
+                <span class="code-operator">=</span>
+                <span class="code-bracket">[</span>
+              </div>
+              <div class="code-line">
+                <span class="line-number">4</span>
+                <span class="code-indent">  </span><span class="code-string">'Node.js'</span><span class="code-operator">,</span>
+              </div>
+              <div class="code-line">
+                <span class="line-number">5</span>
+                <span class="code-indent">  </span><span class="code-string">'Backend Development'</span><span class="code-operator">,</span>
+              </div>
+              <div class="code-line">
+                <span class="line-number">6</span>
+                <span class="code-indent">  </span><span class="code-string">'API Design'</span><span class="code-operator">,</span>
+              </div>
+              <div class="code-line">
+                <span class="line-number">7</span>
+                <span class="code-indent">  </span><span class="code-string">'Microservices'</span>
+              </div>
+              <div class="code-line">
+                <span class="line-number">8</span>
+                <span class="code-bracket">]</span><span class="code-operator">;</span>
+              </div>
+              <div class="code-line">
+                <span class="line-number">9</span>
+              </div>
+              <div class="code-line">
+                <span class="line-number">10</span>
+                <span class="code-keyword">console</span><span class="code-operator">.</span><span class="code-function">log</span><span class="code-bracket">(</span><span class="code-string">'Ready to build!'</span><span class="code-bracket">)</span><span class="code-operator">;</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+}
+

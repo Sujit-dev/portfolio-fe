@@ -1,0 +1,134 @@
+@if (isQA) {
+  <!-- QA Portfolio - Plain Design -->
+  <section id="portfolio" class="portfolio qa-portfolio">
+    <div class="portfolio-container qa-portfolio-container">
+      <div class="section-header qa-section-header">
+        <h2 class="section-title qa-section-title">Projects</h2>
+        <p class="section-subtitle qa-section-subtitle">Explore my work on enterprise applications and software solutions</p>
+      </div>
+
+      <div class="filter-buttons qa-filter-buttons">
+        @for (category of categories; track category) {
+          <button 
+            class="filter-btn qa-filter-btn" 
+            [class.active]="selectedCategory === category"
+            (click)="selectCategory(category)">
+            {{ category }}
+          </button>
+        }
+      </div>
+
+      <div class="portfolio-grid qa-portfolio-grid">
+        @for (item of filteredItems; track item.id) {
+          <div class="portfolio-item qa-portfolio-item" (mouseenter)="resetOverlayScroll($event)">
+            <div class="portfolio-image-wrapper qa-image-wrapper">
+              <img [src]="item.imageUrl" [alt]="item.title" loading="lazy" class="qa-portfolio-image">
+              <div class="portfolio-overlay qa-portfolio-overlay" #overlay>
+                <div class="portfolio-info qa-portfolio-info">
+                  <h3 class="portfolio-item-title qa-item-title">{{ item.title }}</h3>
+                  <p class="portfolio-item-company qa-item-company">{{ item.company }}</p>
+                  <p class="portfolio-item-role qa-item-role">{{ item.role }}</p>
+                  <p class="portfolio-item-category qa-item-category">{{ item.category }}</p>
+                  <p class="portfolio-item-timeline qa-item-timeline">
+                    {{ formatDate(item.startDate) }} - {{ item.endDate ? formatDate(item.endDate) : 'Present' }}
+                    <span class="portfolio-duration qa-duration">({{ getDuration(item.startDate, item.endDate) }})</span>
+                  </p>
+                  @if (item.description) {
+                    <p class="portfolio-item-description qa-item-description">{{ item.description }}</p>
+                  }
+                  @if (item.technologies && item.technologies.length > 0) {
+                    <div class="portfolio-technologies qa-technologies">
+                      <span class="tech-label qa-tech-label">Tech Stack:</span>
+                      <div class="tech-tags-mini qa-tech-tags-mini">
+                        @for (tech of item.technologies; track tech) {
+                          <span class="tech-tag-mini qa-tech-tag-mini">{{ tech }}</span>
+                        }
+                      </div>
+                    </div>
+                  }
+                </div>
+              </div>
+            </div>
+            @if (item.responsibilities && item.responsibilities.length > 0) {
+              <div class="portfolio-details qa-portfolio-details">
+                <h4 class="qa-responsibilities-title">Key Responsibilities:</h4>
+                <ul class="responsibilities-list qa-responsibilities-list">
+                  @for (responsibility of item.responsibilities; track $index) {
+                    <li class="qa-responsibility-item">{{ responsibility }}</li>
+                  }
+                </ul>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+} @else {
+  <!-- Developer Portfolio - Terminal Style -->
+  <section id="portfolio" class="portfolio">
+    <div class="portfolio-container">
+      <div class="section-header">
+        <h2 class="section-title">Projects</h2>
+        <p class="section-subtitle">Explore my work on enterprise applications and software solutions</p>
+      </div>
+
+      <div class="filter-buttons">
+        @for (category of categories; track category) {
+          <button 
+            class="filter-btn" 
+            [class.active]="selectedCategory === category"
+            (click)="selectCategory(category)">
+            {{ category }}
+          </button>
+        }
+      </div>
+
+      <div class="portfolio-grid">
+        @for (item of filteredItems; track item.id) {
+          <div class="portfolio-item" (mouseenter)="resetOverlayScroll($event)">
+            <div class="portfolio-image-wrapper">
+              <img [src]="item.imageUrl" [alt]="item.title" loading="lazy">
+              <div class="portfolio-overlay" #overlay>
+                <div class="portfolio-info">
+                  <h3 class="portfolio-item-title">{{ item.title }}</h3>
+                  <p class="portfolio-item-company">{{ item.company }}</p>
+                  <p class="portfolio-item-role">{{ item.role }}</p>
+                  <p class="portfolio-item-category">{{ item.category }}</p>
+                  <p class="portfolio-item-timeline">
+                    {{ formatDate(item.startDate) }} - {{ item.endDate ? formatDate(item.endDate) : 'Present' }}
+                    <span class="portfolio-duration">({{ getDuration(item.startDate, item.endDate) }})</span>
+                  </p>
+                  @if (item.description) {
+                    <p class="portfolio-item-description">{{ item.description }}</p>
+                  }
+                  @if (item.technologies && item.technologies.length > 0) {
+                    <div class="portfolio-technologies">
+                      <span class="tech-label">Tech Stack:</span>
+                      <div class="tech-tags-mini">
+                        @for (tech of item.technologies; track tech) {
+                          <span class="tech-tag-mini">{{ tech }}</span>
+                        }
+                      </div>
+                    </div>
+                  }
+                </div>
+              </div>
+            </div>
+            @if (item.responsibilities && item.responsibilities.length > 0) {
+              <div class="portfolio-details">
+                <h4>Key Responsibilities:</h4>
+                <ul class="responsibilities-list">
+                  @for (responsibility of item.responsibilities; track $index) {
+                    <li>{{ responsibility }}</li>
+                  }
+                </ul>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+}
+

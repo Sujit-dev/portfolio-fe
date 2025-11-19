@@ -1,0 +1,210 @@
+@if (isQA) {
+  <!-- QA Contact - Plain Design -->
+  <section id="contact" class="contact qa-contact">
+    <div class="contact-container qa-contact-container">
+      <div class="section-header qa-section-header">
+        <h2 class="section-title qa-section-title">Get In Touch</h2>
+        <p class="section-subtitle qa-section-subtitle">Ready to build something amazing? Let's connect!</p>
+      </div>
+
+      <div class="contact-content qa-contact-content">
+        <div class="contact-info qa-contact-info">
+          <div class="info-card qa-info-card">
+            <div class="info-icon qa-info-icon">📧</div>
+            <h3 class="qa-info-title">Email</h3>
+            <a [href]="'mailto:' + portfolioData?.contact?.email" class="qa-info-link">{{ portfolioData?.contact?.email }}</a>
+          </div>
+          
+          <div class="info-card qa-info-card">
+            <div class="info-icon qa-info-icon">📱</div>
+            <h3 class="qa-info-title">Phone</h3>
+            <a [href]="'tel:' + portfolioData?.contact?.phone" class="qa-info-link">{{ portfolioData?.contact?.phone }}</a>
+          </div>
+
+          @if (portfolioData?.contact?.address) {
+            <div class="info-card qa-info-card">
+              <div class="info-icon qa-info-icon">📍</div>
+              <h3 class="qa-info-title">Location</h3>
+              <p class="qa-info-text">{{ portfolioData?.contact?.address }}</p>
+            </div>
+          }
+
+          <div class="social-links qa-social-links">
+            <h3 class="qa-social-title">Follow Me</h3>
+            <div class="social-icons qa-social-icons">
+              @for (link of portfolioData?.socialLinks; track link.name) {
+                <a [href]="link.url" target="_blank" rel="noopener" class="social-icon qa-social-icon" [attr.aria-label]="link.name">
+                  <span class="social-emoji qa-social-emoji">{{ link.icon }}</span>
+                  <span class="social-name qa-social-name">{{ link.name }}</span>
+                </a>
+              }
+            </div>
+          </div>
+        </div>
+
+        <div class="contact-form-wrapper qa-form-wrapper">
+          <form class="contact-form qa-contact-form" (ngSubmit)="onSubmit()" #form="ngForm">
+            <div class="form-group qa-form-group">
+              <label for="name" class="qa-form-label">Name</label>
+              <input 
+                type="text" 
+                id="name" 
+                name="name" 
+                [(ngModel)]="contactForm.name" 
+                required
+                placeholder="Your name"
+                class="qa-form-input">
+            </div>
+
+            <div class="form-group qa-form-group">
+              <label for="email" class="qa-form-label">Email</label>
+              <input 
+                type="email" 
+                id="email" 
+                name="email" 
+                [(ngModel)]="contactForm.email" 
+                required
+                placeholder="your.email@example.com"
+                class="qa-form-input">
+            </div>
+
+            <div class="form-group qa-form-group">
+              <label for="phone" class="qa-form-label">Phone</label>
+              <input 
+                type="number" 
+                id="phone" 
+                name="phone" 
+                [(ngModel)]="contactForm.phone"
+                placeholder="Enter phone number"
+                class="qa-form-input">
+            </div>
+
+            <div class="form-group qa-form-group">
+              <label for="message" class="qa-form-label">Message</label>
+              <textarea 
+                id="message" 
+                name="message" 
+                [(ngModel)]="contactForm.message" 
+                required
+                rows="5"
+                placeholder="Tell me about your project..."
+                enterkeyhint="send"
+                class="qa-form-textarea"></textarea>
+            </div>
+
+            <button type="submit" class="submit-btn qa-submit-btn" [disabled]="!form.valid">
+              @if (submitted) {
+                <span>✓ Message Sent!</span>
+              } @else {
+                <span>Send Message</span>
+              }
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+} @else {
+  <!-- Developer Contact - Original Design -->
+  <section id="contact" class="contact">
+    <div class="contact-container">
+      <div class="section-header">
+        <h2 class="section-title">Get In Touch</h2>
+        <p class="section-subtitle">Ready to build something amazing? Let's connect!</p>
+      </div>
+
+      <div class="contact-content">
+        <div class="contact-info">
+          <div class="info-card">
+            <div class="info-icon">📧</div>
+            <h3>Email</h3>
+            <a [href]="'mailto:' + portfolioData?.contact?.email">{{ portfolioData?.contact?.email }}</a>
+          </div>
+          
+          <div class="info-card">
+            <div class="info-icon">📱</div>
+            <h3>Phone</h3>
+            <a [href]="'tel:' + portfolioData?.contact?.phone">{{ portfolioData?.contact?.phone }}</a>
+          </div>
+
+          @if (portfolioData?.contact?.address) {
+            <div class="info-card">
+              <div class="info-icon">📍</div>
+              <h3>Location</h3>
+              <p>{{ portfolioData?.contact?.address }}</p>
+            </div>
+          }
+
+          <div class="social-links">
+            <h3>Follow Me</h3>
+            <div class="social-icons">
+              @for (link of portfolioData?.socialLinks; track link.name) {
+                <a [href]="link.url" target="_blank" rel="noopener" class="social-icon" [attr.aria-label]="link.name">
+                  <span class="social-emoji">{{ link.icon }}</span>
+                  <span class="social-name">{{ link.name }}</span>
+                </a>
+              }
+            </div>
+          </div>
+        </div>
+
+        <div class="contact-form-wrapper">
+          <form class="contact-form" (ngSubmit)="onSubmit()" #form="ngForm">
+            <div class="form-group">
+              <label for="name">Name</label>
+              <input 
+                type="text" 
+                id="name" 
+                name="name" 
+                [(ngModel)]="contactForm.name" 
+                required
+                placeholder="Your name">
+            </div>
+
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input 
+                type="email" 
+                id="email" 
+                name="email" 
+                [(ngModel)]="contactForm.email" 
+                required
+                placeholder="your.email@example.com">
+            </div>
+
+            <div class="form-group">
+              <label for="phone">Phone</label>
+              <input 
+                type="number" 
+                id="phone" 
+                name="phone" 
+                [(ngModel)]="contactForm.phone"
+                placeholder="Enter phone number">
+            </div>
+
+            <div class="form-group">
+              <label for="message">Message</label>
+              <textarea 
+                id="message" 
+                name="message" 
+                [(ngModel)]="contactForm.message" 
+                required
+                rows="5"
+                placeholder="Tell me about your project..."
+                enterkeyhint="send"></textarea>
+            </div>
+
+            <button type="submit" class="submit-btn" [disabled]="!form.valid">
+              @if (submitted) {
+                <span>✓ Message Sent!</span>
+              } @else {
+                <span>Send Message</span>
+              }
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+}
+

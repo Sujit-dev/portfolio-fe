@@ -1,0 +1,25 @@
+<header class="header" [class.qa-header]="portfolioType === 'qa'">
+  <nav class="nav">
+    <div class="nav-brand">
+      <a href="#" (click)="navigateToLanding(); $event.preventDefault()" class="logo">
+        <span class="logo-icon">{{ getLogoIcon() }}</span>
+        <span class="logo-text">{{ getLogoText() }}</span>
+      </a>
+    </div>
+    
+    <button class="menu-toggle" (click)="toggleMenu()" aria-label="Toggle menu">
+      <span [class.active]="isMenuOpen"></span>
+      <span [class.active]="isMenuOpen"></span>
+      <span [class.active]="isMenuOpen"></span>
+    </button>
+
+    <ul class="nav-menu" [class.active]="isMenuOpen">
+      <li><a href="#home" (click)="scrollToSection('home'); $event.preventDefault()">Home</a></li>
+      <li><a href="#home" (click)="scrollToSection('home'); $event.preventDefault()">About</a></li>
+      <li><a href="#experience" (click)="scrollToSection('experience'); $event.preventDefault()">Experience</a></li>
+      <li><a href="#portfolio" (click)="scrollToSection('portfolio'); $event.preventDefault()">Portfolio</a></li>
+      <li><a href="#contact" (click)="scrollToSection('contact'); $event.preventDefault()">Contact</a></li>
+    </ul>
+  </nav>
+</header>
+
